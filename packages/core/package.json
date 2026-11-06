@@ -1,0 +1,43 @@
+{
+    "version": "1.0.0",
+    "type": "module",
+    "license": "MIT",
+    "engines": {
+        "node": ">=22.22.2"
+    },
+    "name": "@jalsoedesign/openssh-core",
+    "description": "Read and safely write openssh native configuration and Portline profiles",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "scripts": {
+        "build": "tsc -p tsconfig.json",
+        "prepack": "npm run build"
+    },
+    "dependencies": {
+        "@jalsoedesign/portline-abstract": "^1.0.0",
+        "@jalsoedesign/portline-platform": "^1.0.0"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/h2ooooooo/openssh-js.git",
+        "directory": "packages/core"
+    },
+    "homepage": "https://h2ooooooo.github.io/openssh-js/",
+    "bugs": {
+        "url": "https://github.com/h2ooooooo/openssh-js/issues"
+    }
+}
