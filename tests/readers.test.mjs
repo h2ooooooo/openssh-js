@@ -105,3 +105,26 @@ test('agrees with native ssh -G for Host values and first-value precedence', asy
     assert.equal(endpoint.port, Number(native.port));
     assert.equal(endpoint.username, native.user);
 });
+
+test('normalized execution distinguishes password prompts and blocks native-only SSH evaluation', async t => {
+    const directory = await fixture(t);
+    const filename = path.join(directory, 'config');
+    await writeFile(filename, [
+        'Host plain', 'HostName plain.example', 'IdentityAgent SSH_AUTH_SOCK',
+        'KbdInteractiveAuthentication no', 'IdentityFile ~/.ssh/%%u',
+        'Host native', 'HostName native.example', 'ProxyCommand proxy %h', 'UserKnownHostsFile ~/.ssh/special', 'IdentityFile %u/id',
+        'Match exec "never run"', 'User unavailable',
+    ].join('\n'));
+    const source = await OpenSshProfileSource.fromFile(filename, {homeDirectory: directory});
+    const plain = source.get('plain').connections[0];
+    const native = source.get('native').connections[0];
+
+    assert.ok(plain.authentication.some(auth => auth.type === 'prompt-password'));
+    assert.ok(!plain.unsupportedOptions.includes('IdentityFile token expansion'));
+    assert.ok(!plain.authentication.some(auth => auth.type === 'interactive'));
+    assert.equal(plain.authentication.find(auth => auth.type === 'agent').agent, undefined);
+    assert.ok(native.unsupportedOptions.includes('proxycommand'));
+    assert.ok(native.unsupportedOptions.includes('Match'));
+    assert.ok(native.unsupportedOptions.includes('userknownhostsfile'));
+    assert.ok(native.unsupportedOptions.includes('IdentityFile token expansion'));
+});

@@ -5,12 +5,12 @@ Query a synthetic profile without reading installed application settings or cont
 ## Install
 
 ```sh
-npm install --global @jalsoedesign/openssh-cli
+npm install --global @jalsoedesign/openssh-cli@rc
 openssh-js --help
 ```
 
 
-For a project-local dependency use `npm install @jalsoedesign/openssh-cli`, then prefix the commands below with `npm exec --`. Runtime requirements are listed in [installation](/guide/installation).
+For a project-local dependency use `npm install @jalsoedesign/openssh-cli@rc`, then prefix the commands below with `npm exec --`. Runtime requirements are listed in [installation](/guide/installation).
 
 ## Create the fixture
 

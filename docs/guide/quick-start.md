@@ -35,3 +35,5 @@ Next: [storage and discovery](/guide/storage), [API reference](/reference/api), 
 To run a complete example locally and compare its actual output, see [Run a local demo](/guide/local-demo).
 
 Start with the [API example and output](/api/quick-start), or switch to [CLI documentation](/cli/).
+
+For an explicit live operation after selecting a profile, use [the shared connection walkthrough](/api/integration). Native-only execution requirements are represented as `unsupportedOptions`; reading a profile does not grant permission to discard them.

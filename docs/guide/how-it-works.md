@@ -64,3 +64,7 @@ Supported `ProxyJump` values become linked connection metadata. They do not star
 Reopen the source after its configuration changes. Reading and searching do not modify files. The writer handles a documented subset of Portline-managed literal Host blocks through a separate preview/apply workflow.
 
 Start with the [API quick start](/api/quick-start) or [CLI quick start](/cli/quick-start). The [API reference](/reference/api) lists available methods, and [profile writing](/guide/writing) explains supported changes and safeguards.
+
+## Shared execution after native interpretation
+
+The source now exposes normalized execution details alongside metadata. `@jalsoedesign/portline-dockline` performs the shared mapping and delegates live sessions to optional Dockline clients. Native-only requirements appear in `unsupportedOptions`; they are refused rather than dropped. Read [the scoped source-to-session walkthrough](/api/integration) for supported operations and explicit trust/authentication options.

@@ -71,6 +71,20 @@ function expandHome(filename: string, home: string): string {
     return filename === '~' ? home : /^~[\\/]/.test(filename) ? path.join(home, filename.slice(2)) : filename;
 }
 
+function unsupportedIdentityTokens(value: string): boolean {
+    for (let index = 0; index < value.length; index++) {
+        if (value[index] === '%') {
+            const token = value[++index];
+
+            if (!token || !'%dnhrp'.includes(token)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 async function readDirectives(
     filename: string,
     home: string,
@@ -286,7 +300,8 @@ export class OpenSshProfileSource extends NativeProfileSource {
         const username = String(settings.user ?? os.userInfo().username);
         const connectionPort = port(String(settings.port ?? ''), 22);
         const identities = (settings.identityfile ?? []) as string[];
-        const authentication: AuthenticationMethod[] = identities.filter(value => value !== 'none').map(value => ({
+        const authentication: AuthenticationMethod[] = (settings.pubkeyauthentication === 'no' ? [] : identities)
+            .filter(value => value !== 'none').map(value => ({
             type: 'private-key',
             path: {
                 value: expandHome(value.replace(/%([%dnhrp])/g, (_, token: string) => ({
@@ -297,14 +312,42 @@ export class OpenSshProfileSource extends NativeProfileSource {
             format: 'openssh',
         }));
 
-        if (String(settings.identityagent ?? '') !== 'none') {
-            authentication.push({type: 'agent', agent: String(settings.identityagent ?? 'SSH_AUTH_SOCK')});
+        if (settings.pubkeyauthentication !== 'no' && String(settings.identityagent ?? '') !== 'none') {
+            authentication.push({
+                type: 'agent',
+                agent: settings.identityagent && settings.identityagent !== 'SSH_AUTH_SOCK' ?
+                    expandHome(String(settings.identityagent), this.#home) : undefined,
+            });
         }
 
-        authentication.push({type: 'interactive'});
+        if (settings.passwordauthentication !== 'no') {
+            authentication.push({type: 'prompt-password'});
+        }
+
+        if (settings.kbdinteractiveauthentication !== 'no' && settings.challengeresponseauthentication !== 'no') {
+            authentication.push({type: 'interactive'});
+        }
+
+        const unsupportedOptions = [
+            ...diagnostics.filter(diagnostic => diagnostic.code === 'unsupported-match').map(() => 'Match'),
+            ...[
+                'proxycommand', 'certificatefile', 'hostkeyalias', 'hostkeyalgorithms',
+                'ciphers', 'kexalgorithms', 'macs', 'pkcs11provider', 'securitykeyprovider',
+                'userknownhostsfile', 'globalknownhostsfile', 'stricthostkeychecking',
+                'preferredauthentications', 'authenticationmethods',
+                'localforward', 'remoteforward', 'dynamicforward', 'remotecommand',
+            ].filter(keyword => settings[keyword] !== undefined && settings[keyword] !== 'none'),
+            ...(settings.canonicalizehostname === 'yes' ? ['CanonicalizeHostname'] : []),
+            ...(settings.identitiesonly === 'yes' ? ['IdentitiesOnly'] : []),
+            ...(settings.forwardagent === 'yes' ? ['ForwardAgent'] : []),
+            ...(identities.some(unsupportedIdentityTokens) ? ['IdentityFile token expansion'] : []),
+            ...(String(settings.identityagent ?? '').includes('%') ? ['IdentityAgent token expansion'] : []),
+            ...(String(settings.identityagent ?? '').includes('$') ? ['IdentityAgent environment expansion'] : []),
+        ];
         const jumps = String(settings.proxyjump ?? '').split(',').filter(value => value && value !== 'none');
         const connections: ConnectionDefinition[] = [{
             id: 'connection',
+            unsupportedOptions,
             kind: 'ssh',
             protocol: 'ssh',
             endpoint: {host, port: connectionPort, username},
@@ -329,7 +372,8 @@ export class OpenSshProfileSource extends NativeProfileSource {
                     port: port(match[3] ?? String(target.port ?? ''), 22),
                     username: match[1] ?? (target.user ? String(target.user) : undefined),
                 },
-                authentication: [{type: 'interactive'}],
+                authentication: [{type: 'prompt-password'}, {type: 'interactive'}],
+                unsupportedOptions: ['ProxyJump authentication requires native OpenSSH evaluation'],
                 via: index > 0 ? ['jump-' + (index - 1)] : undefined,
             });
         });

@@ -34,3 +34,7 @@ An SSH configuration already describes named hosts, usernames, key paths and sup
 Wildcard evaluation and supported Include/token handling have explicit limits. ProxyJump is metadata; this reader does not start forwarding or run ssh/ProxyCommand. See the [API reference](/reference/api) for supported parser behavior.
 
 [Browse related application libraries](https://h2ooooooo.github.io/portline/libraries/).
+
+## Reuse a saved connection
+
+[Connect a selected profile](/api/integration) through the optional shared Portline–Dockline integration. Use the same scoped execution API across application readers while keeping native parsing and metadata queries free of transport dependencies.

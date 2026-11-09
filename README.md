@@ -7,8 +7,8 @@ Read OpenSSH configuration, ordered Host rules, Include files, identities and Pr
 ## Install and read profiles
 
 ~~~sh
-npm install @jalsoedesign/openssh-core
-npm install --global @jalsoedesign/openssh-cli
+npm install @jalsoedesign/openssh-core@rc
+npm install --global @jalsoedesign/openssh-cli@rc
 ~~~
 
 ~~~ts
@@ -48,3 +48,49 @@ See the [development guide](docs/development.md) for independent builds, linting
 ## Runnable examples
 
 [Run a local demo](docs/guide/local-demo.md) for one-command examples and captured output. Profile demos use synthetic settings and make no remote connections.
+
+## Shared connection execution
+
+OpenSSH supplies native settings and normalized Portline connection definitions. Install the optional
+`@jalsoedesign/portline-dockline` integration and the Dockline client for the operation you need:
+`dockline-ftp-client` for FTP/FTPS, `dockline-sftp-client` for file transfers over SSH, or
+`dockline-ssh-client` for SSH commands. The reader itself has no transport dependency.
+
+Use the same shared bridge with any Portline source. Resolve only the selected connection's credentials;
+configure host verification explicitly at runtime, or supply supported saved fingerprint metadata.
+Listing profiles does not resolve credentials or connect. Saved tunnels remain explicit connection references;
+the bridge refuses routes it cannot execute rather than bypassing them.
+
+Native connection options that cannot be faithfully represented are exposed in `unsupportedOptions`.
+The shared bridge refuses those definitions before connecting. Native settings remain available through the
+reader; a metadata projection is not permission to ignore saved proxy, authentication or trust requirements.
+
+After building the reader, run `npm run demo:execution` with the shared bridge installed to check a synthetic
+native profile through the real configuration mapper. This smoke example opens no network connections and
+checks that unsupported native settings are refused. It never prints resolved credentials.
+
+For a real scoped session, select your saved profile and provide its password (when needed) and an independently
+verified SSH host-key fingerprint through the environment. Install the matching Dockline client first.
+
+```js
+import {OpenSshProfileSource} from '@jalsoedesign/openssh-core';
+import {createDocklineBridge} from '@jalsoedesign/portline-dockline';
+
+const source = await OpenSshProfileSource.open({file: '/path/to/.ssh/config'});
+const bridge = createDocklineBridge({source});
+
+await bridge.withSsh('production', async session => {
+    console.log((await session.exec('uname', ['-a'])).stdout);
+}, {password: process.env.REMOTE_PASSWORD, hostFingerprint: process.env.SSH_HOST_KEY_SHA256});
+```
+
+The scope closes the connection after the callback, including on failure.
+
+Relative private-key paths without a documented base directory require an explicit runtime `privateKeyPath`.
+Unresolved native path macros are refused; the bridge never guesses a key path from the process working directory.
+
+For complete source selection, language variants, runtime options and native-only refusal rules, use the
+[connection execution guide](https://h2ooooooo.github.io/openssh-js/api/integration). SSH fingerprints must use
+canonical SHA256 base64; trust callbacks never persist approval. The reader CLI gains no network commands.
+
+See [First release candidate](RELEASE_RC.md) for RC versions and installation commands.

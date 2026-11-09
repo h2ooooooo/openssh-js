@@ -32,7 +32,7 @@ Profile parsing does not open SSH, transfer files, run saved commands or execute
 
 Sync does not copy credential values between profiles. Recovery backups are different: they contain the original native settings and can include stored or obfuscated credentials. File backups are protected by current-user ACLs; registry backups use current-user DPAPI. Keep them private and retain them when recovery is required.
 
-A normalized profile is not a Dockline connection configuration. There is no built-in universal provider that executes every application profile or opens its via/ProxyJump tunnel chain. Callers must select a supported connection, map its settings, resolve credentials explicitly and provide trust policy. FileZilla supplies saved-site factories; generic Portline registries only dispatch providers that the caller registers. SQL execution and database import/export remain outside these libraries.
+The optional `@jalsoedesign/portline-dockline` package now maps supported normalized profiles into Dockline execution. Readers keep native parsing and credential providers; the shared bridge owns connection selection, conversion and runtime policy. Install only the Dockline client needed for FTP/FTPS, SFTP or SSH. Use [the complete scoped connection example](/api/integration) instead of manually mapping native settings. The bridge refuses unsupported native requirements and SSH-hop routes; it never infers an SSH endpoint from a database or FTP address. SQL execution and database import/export remain outside these libraries.
 
 ## Configuration evaluation limits
 

@@ -21,3 +21,5 @@ Follow the [CLI quick start](/cli/quick-start) to create synthetic settings and 
 
 
 These commands read metadata or explicitly write local settings. They do not open SSH connections, transfer files or execute SQL. For code integrations use the [API area](/api/).
+
+For an explicit remote connection, use the separate [shared execution SDK example](/api/integration). The profile CLI remains responsible for queries and guarded local settings changes; the integration adds no SSH, upload or database subcommands.

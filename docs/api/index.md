@@ -22,3 +22,7 @@ Install `@jalsoedesign/openssh-core` to use the library. The separate `@jalsoede
 Wildcard evaluation and supported Include/token handling have explicit limits. ProxyJump is metadata; this reader does not start forwarding or run ssh/ProxyCommand.
 
 Application adapters retain native provenance and diagnostics. Portline supplies shared contracts/querying/writer guards; Dockline is a separate execution library. For terminal commands, switch to the [CLI documentation](/cli/).
+
+## Connect through the shared integration
+
+Use [shared FTP/SFTP and SSH execution](/api/integration) to reuse a selected normalized profile with `@jalsoedesign/portline-dockline`. The guide includes reader-specific source creation, optional client installation, scoped cleanup and trust/authentication requirements. Native readers do not open connections while listing profiles.

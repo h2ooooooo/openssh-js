@@ -28,3 +28,5 @@ for (const variant of variants) {
     assert.equal(result.stdout.replaceAll('\r\n', '\n').trim(), expected, 'API example output changed; review and update the transcript');
     console.log('API quick-start source and output verified' + (variant ? ': ' + variant : '.'));
 }
+
+await import('./check-doc-connection.mjs');
