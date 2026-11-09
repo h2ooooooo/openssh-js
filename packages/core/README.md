@@ -5,8 +5,8 @@ Read OpenSSH configuration, ordered Host rules, Include files, identities and Pr
 ## Install and read profiles
 
 ~~~sh
-npm install @jalsoedesign/openssh-core@rc
-npm install --global @jalsoedesign/openssh-cli@rc
+npm install @jalsoedesign/openssh-core
+npm install --global @jalsoedesign/openssh-cli
 ~~~
 
 ~~~ts

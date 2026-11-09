@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0-rc.1",
+    "version": "1.0.0",
     "type": "module",
     "license": "MIT",
     "engines": {
@@ -25,12 +25,12 @@
         "prepack": "npm run build"
     },
     "dependencies": {
-        "@jalsoedesign/portline-abstract": "^1.0.0-rc.1",
-        "@jalsoedesign/portline-platform": "^1.0.0-rc.1"
+        "@jalsoedesign/portline-abstract": "^1.0.0",
+        "@jalsoedesign/portline-platform": "^1.0.0"
     },
     "publishConfig": {
         "access": "public",
-        "tag": "rc"
+        "tag": "latest"
     },
     "repository": {
         "type": "git",
