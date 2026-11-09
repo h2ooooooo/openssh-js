@@ -34,7 +34,8 @@
         "release:lock": "node scripts/release-bootstrap.mjs --lock",
         "check:bootstrap": "node scripts/release-bootstrap.mjs",
         "test:publication": "node --test scripts/publication-policy.test.mjs",
-        "demo:execution": "node examples/test-execution.mjs"
+        "demo:execution": "node examples/test-execution.mjs",
+        "test:docs-links": "node --test scripts/doc-links.test.mjs"
     },
     "devDependencies": {
         "@jalsoedesign/portline-abstract": "^1.0.0",
